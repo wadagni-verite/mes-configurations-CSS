@@ -1,0 +1,19 @@
+📁 ethique-juridique-benin/
+├── 📁 src/
+│   ├── 📁 app/
+│   │   ├── layout.tsx        ← Copier le contenu
+│   │   ├── page.tsx          ← Copier le contenu
+│   │   ├── globals.css       ← Copier le contenu
+│   │   └── 📁 api/
+│   │       ├── 📁 stats/route.ts
+│   │       ├── 📁 institutions/route.ts
+│   │       ├── 📁 persons/route.ts
+│   │       ├── 📁 documents/route.ts
+│   │       ├── 📁 affairs/route.ts
+│   │       └── 📁 seed/route.ts
+│   ├── 📁 components/
+│   │   └── 📁 site/          ← Tous les composants
+│   └── 📁 lib/
+│       └── db.ts             ← Client Prisma
+└── 📁 prisma/
+    └── schema.prisma         ← Schéma DB
