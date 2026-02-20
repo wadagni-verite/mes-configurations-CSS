@@ -1,0 +1,10 @@
+📁 Contenu de l'archive :
+├── src/components/site/     ← Tous les composants React
+├── src/app/page.tsx         ← Page principale
+├── src/app/layout.tsx       ← Layout
+├── src/app/globals.css      ← Styles CSS
+├── src/app/api/             ← Routes API
+├── prisma/schema.prisma     ← Base de données
+├── src/lib/db.ts            ← Client DB
+├── package.json             ← Dépendances
+└── tailwind.config.ts       ← Configuration Tailwind
