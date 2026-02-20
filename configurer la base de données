@@ -1,0 +1,8 @@
+# Créer le fichier .env
+echo 'DATABASE_URL="file:./dev.db"' > .env
+
+# Initialiser Prisma
+npx prisma db push
+
+# Peupler la base (appeler l'API seed)
+curl -X POST http://localhost:3000/api/seed
