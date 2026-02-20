@@ -1,0 +1,132 @@
+// This is the Prisma schema file for the Ethique Juridique 2.0 Bénin platform
+// A platform to denounce the decay of public faith in Benin
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Categories of institutions (Tribunaux, Mairies, Notaires, etc.)
+model InstitutionCategory {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  icon        String?
+  color       String?
+  institutions Institution[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// Institutions being indexed
+model Institution {
+  id           String              @id @default(cuid())
+  name         String
+  slug         String              @unique
+  description  String?
+  address      String?
+  type         String              // tribunal, mairie, notaire, avocat, etc.
+  categoryId   String?
+  category     InstitutionCategory? @relation(fields: [categoryId], references: [id])
+  cases        Affair[]
+  implicatedIn PersonAffair[]
+  persons      Person[]            // Persons linked to this institution
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+}
+
+// Persons being indexed (responsible individuals)
+model Person {
+  id             String         @id @default(cuid())
+  firstName      String
+  lastName       String
+  slug           String         @unique
+  photoUrl       String?
+  biography      String?
+  position       String?        // Current or former position
+  institution    String?        // Institution name (for display)
+  institutionId  String?
+  linkedInstitution Institution? @relation(fields: [institutionId], references: [id])
+  status         String         @default("active") // active, under_investigation, convicted, dismissed
+  casesCount     Int            @default(0)
+  implicatedIn   PersonAffair[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+// Affairs/Cases documented
+model Affair {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  summary         String
+  description     String
+  status          String         @default("open") // open, under_investigation, closed
+  severity        String         @default("serious") // minor, serious, critical
+  dateIncident    DateTime?
+  dateRevealed    DateTime?
+  institutionId   String?
+  institution     Institution?   @relation(fields: [institutionId], references: [id])
+  documents       Document[]
+  implicatedPersons PersonAffair[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// Junction table for Person-Affair relationship
+model PersonAffair {
+  id           String     @id @default(cuid())
+  personId     String
+  person       Person     @relation(fields: [personId], references: [id])
+  affairId     String
+  affair       Affair     @relation(fields: [affairId], references: [id])
+  role         String?    // What role did they play in this affair
+  institutionId String?
+  institution  Institution? @relation(fields: [institutionId], references: [id])
+  evidence     String?    // Specific evidence against this person in this affair
+  createdAt    DateTime   @default(now())
+  
+  @@unique([personId, affairId])
+}
+
+// Documents/Evidence
+model Document {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  type         String   // judgment, certificate, pv, letter, etc.
+  fileUrl      String   // Path to downloadable file
+  fileSize     Int?
+  mimeType     String?
+  affairId     String
+  affair       Affair   @relation(fields: [affairId], references: [id])
+  dateDocument DateTime?
+  uploadedAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Statistics for the platform
+model PlatformStats {
+  id              String   @id @default(cuid())
+  totalCases      Int      @default(0)
+  totalPersons    Int      @default(0)
+  totalInstitutions Int    @default(0)
+  totalDocuments  Int      @default(0)
+  updatedAt       DateTime @updatedAt
+}
+
+// Contact messages from the public
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
